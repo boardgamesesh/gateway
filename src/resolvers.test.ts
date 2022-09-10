@@ -14,10 +14,10 @@ describe('Resolvers', () => {
       };
 
       const {
-        Query: { auth },
+        Query: { user },
       } = getResolvers();
 
-      await auth(null, { id }, { dataSources, hashKey });
+      await user(null, { id }, { dataSources, hashKey });
       expect(dataSources.userSource.getItem).toHaveBeenCalledWith(id, {
         hashKey,
         withMetadata: true,
@@ -70,7 +70,7 @@ describe('Resolvers', () => {
       };
 
       const {
-        Item: { __resolveReference },
+        User: { __resolveReference },
       } = getResolvers();
 
       await __resolveReference({ id }, { dataSources, hashKey });

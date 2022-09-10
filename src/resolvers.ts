@@ -5,7 +5,7 @@ import { User, Input, IdObject, GenericUserPayload, Context } from './types';
 
 export const getResolvers = () => ({
   Query: {
-    auth: async (_: any, args: IdObject, { dataSources, hashKey }: Context) =>
+    user: async (_: any, args: IdObject, { dataSources, hashKey }: Context) =>
       dataSources.userSource.getItem(args.id, { hashKey, withMetadata: true }),
     users: async (_: any, args: { input: Query }, { dataSources }: Context) =>
       dataSources.userSource.query(args.input, { withMetadata: true }),
@@ -34,7 +34,7 @@ export const getResolvers = () => ({
       dataSources.userSource.deleteItem(args.id, { hashKey, withMetadata: true }),
   },
 
-  Item: {
+  User: {
     __resolveReference: ({ id }: Partial<User>, { dataSources, hashKey }: Context) =>
       dataSources.userSource.getItem(id, { hashKey, withMetadata: true }),
   },
