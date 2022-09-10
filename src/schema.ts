@@ -4,47 +4,47 @@ export default () => gql`
   scalar DateTime
   scalar JSONObject
 
-  type Thing @key(fields: "id") {
+  type User @key(fields: "id") {
     id: ID!
     name: String!
     createdAt: DateTime
     updatedAt: DateTime
   }
 
-  input CreateThingInput {
+  input CreateUserInput {
     name: String!
   }
 
-  input UpdateThingInput {
+  input UpdateUserInput {
     id: String!
     name: String!
   }
 
-  input DeleteThingInput {
+  input DeleteUserInput {
     id: String!
   }
 
-  type ThingPayload {
+  type UserPayload {
     consumedCapacity: Float
-    item: Thing
+    item: User
   }
 
-  type ThingListPayload {
+  type UserListPayload {
     consumedCapacity: Float
     lastScannedId: ID
-    items: [Thing]
+    items: [User]
     count: Int
   }
 
   type Query {
-    thing(id: ID!): ThingPayload
-    things(input: JSONObject): ThingListPayload
-    getAllThings: ThingListPayload
+    auth(id: ID!): UserPayload
+    users(input: JSONObject): UserListPayload
+    getAllUsers: UserListPayload
   }
 
   type Mutation {
-    createThing(input: CreateThingInput!): ThingPayload
-    updateThing(input: UpdateThingInput!): ThingPayload
-    deleteThing(id: ID!): ThingPayload
+    createUser(input: CreateUserInput!): UserPayload
+    updateUser(input: UpdateUserInput!): UserPayload
+    deleteUser(id: ID!): UserPayload
   }
 `;

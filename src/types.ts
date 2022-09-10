@@ -1,4 +1,4 @@
-export type Thing = {
+export type User = {
   id: string;
   name: string;
   createdAt: string;
@@ -6,7 +6,7 @@ export type Thing = {
 };
 
 export type Input = {
-  input: Partial<Thing>;
+  input: Partial<User>;
 };
 
 export type IdObject = {
@@ -18,7 +18,7 @@ export type Context = {
   hashKey?: string;
 };
 
-export type GenericThingPayload = {
+export type GenericUserPayload = {
   success: boolean;
-  item?: Thing;
+  item?: User;
 };

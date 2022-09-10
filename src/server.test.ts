@@ -1,4 +1,3 @@
-import { createTestClient } from 'apollo-server-testing';
 import { gql } from 'apollo-server-lambda';
 import getGraphqlServer from '../test/getGraphqlServer';
 
@@ -8,12 +7,12 @@ import getGraphqlServer from '../test/getGraphqlServer';
 describe('Resolver full path', () => {
   it('creates an item without error', async () => {
     const setHeaderMock = jest.fn();
-    const { server, thingSource } = getGraphqlServer({ setHeaders: { push: setHeaderMock } });
-    const itemCreateMock = thingSource.createItem as jest.Mock<any>;
+    const { server, userSource } = getGraphqlServer({ setHeaders: { push: setHeaderMock } });
+    const itemCreateMock = userSource.createItem as jest.Mock<any>;
 
-    const thingMutation = gql`
-      mutation CreateThing($input: CreateThingInput!) {
-        createThing(input: $input) {
+    const authMutation = gql`
+      mutation CreateUser($input: CreateUserInput!) {
+        createUser(input: $input) {
           item {
             id
           }
@@ -32,9 +31,8 @@ describe('Resolver full path', () => {
       },
     }));
 
-    const { mutate } = createTestClient(server as any);
-    const { errors } = await mutate({
-      mutation: thingMutation,
+    const { errors } = await server.executeOperation({
+      query: authMutation,
       variables: { input: item },
     });
 

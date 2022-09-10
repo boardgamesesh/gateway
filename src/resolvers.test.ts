@@ -4,67 +4,67 @@ describe('Resolvers', () => {
   const hashKey = 'threeve';
 
   describe('Queries', () => {
-    it('getThing calls getItem on the dataSource with id', async () => {
+    it('getUser calls getItem on the dataSource with id', async () => {
       const id = '123';
 
       const dataSources = {
-        thingSource: {
+        userSource: {
           getItem: jest.fn(() => Promise.resolve({})),
         },
       };
 
       const {
-        Query: { thing },
+        Query: { auth },
       } = getResolvers();
 
-      await thing(null, { id }, { dataSources, hashKey });
-      expect(dataSources.thingSource.getItem).toHaveBeenCalledWith(id, {
+      await auth(null, { id }, { dataSources, hashKey });
+      expect(dataSources.userSource.getItem).toHaveBeenCalledWith(id, {
         hashKey,
         withMetadata: true,
       });
     });
 
-    it('getAllThings calls getAll with { hashKey }', async () => {
+    it('getAllUsers calls getAll with { hashKey }', async () => {
       // the expectation is that most queries will be getting small groups related to a hash id
       // that hash id is the user id in this implementation
       const dataSources = {
-        thingSource: {
+        userSource: {
           getAll: jest.fn(() => Promise.resolve([])),
         },
       };
 
       const {
-        Query: { getAllThings },
+        Query: { getAllUsers },
       } = getResolvers();
 
-      await getAllThings(null, {}, { dataSources, hashKey });
-      expect(dataSources.thingSource.getAll).toHaveBeenCalledWith({ hashKey, withMetadata: true });
+      await getAllUsers(null, {}, { dataSources, hashKey });
+      expect(dataSources.userSource.getAll).toHaveBeenCalledWith({ hashKey, withMetadata: true });
     });
 
-    it('things calls query with { ...query }', async () => {
+    it('users calls query with { ...query }', async () => {
       const input = {
         name: { $contains: 'floop' },
       };
       // this is the slower dynamodb scan that has a more open query structure than `getAll`
       const dataSources = {
-        thingSource: {
+        userSource: {
           query: jest.fn(() => Promise.resolve([])),
         },
       };
 
       const {
-        Query: { things },
+        Query: { users },
       } = getResolvers();
 
-      await things(null, { input }, { dataSources });
-      expect(dataSources.thingSource.query).toHaveBeenCalledWith(input, { withMetadata: true });
+      await users(null, { input }, { dataSources });
+      expect(dataSources.userSource.query).toHaveBeenCalledWith(input, { withMetadata: true });
     });
 
     it('reference resolver calls getItem on the dataSource with { id }', async () => {
       const id = '123';
 
       const dataSources = {
-        thingSource: {
+        userSource: {
           getItem: jest.fn(() => Promise.resolve({})),
         },
       };
@@ -74,7 +74,7 @@ describe('Resolvers', () => {
       } = getResolvers();
 
       await __resolveReference({ id }, { dataSources, hashKey });
-      expect(dataSources.thingSource.getItem).toHaveBeenCalledWith(id, {
+      expect(dataSources.userSource.getItem).toHaveBeenCalledWith(id, {
         hashKey,
         withMetadata: true,
       });
@@ -82,61 +82,61 @@ describe('Resolvers', () => {
   });
 
   describe('Mutations', () => {
-    it('createThing calls createItem on the dataSource with { id, name }', async () => {
+    it('createUser calls createItem on the dataSource with { id, name }', async () => {
       const input = { id: '123', name: 'widget' };
 
       const dataSources = {
-        thingSource: {
+        userSource: {
           createItem: jest.fn(() => Promise.resolve({})),
         },
       };
 
       const {
-        Mutation: { createThing },
+        Mutation: { createUser },
       } = getResolvers();
 
-      await createThing(null, { input }, { dataSources, hashKey });
-      expect(dataSources.thingSource.createItem).toHaveBeenCalledWith(input, {
+      await createUser(null, { input }, { dataSources, hashKey });
+      expect(dataSources.userSource.createItem).toHaveBeenCalledWith(input, {
         hashKey,
         withMetadata: true,
       });
     });
 
-    it('updateThing calls updateItem on the dataSource with { id, name }', async () => {
+    it('updateUser calls updateItem on the dataSource with { id, name }', async () => {
       const input = { id: '123', name: 'widget' };
 
       const dataSources = {
-        thingSource: {
+        userSource: {
           updateItem: jest.fn(() => Promise.resolve({})),
         },
       };
 
       const {
-        Mutation: { updateThing },
+        Mutation: { updateUser },
       } = getResolvers();
 
-      await updateThing(null, { input }, { dataSources, hashKey });
-      expect(dataSources.thingSource.updateItem).toHaveBeenCalledWith(input, {
+      await updateUser(null, { input }, { dataSources, hashKey });
+      expect(dataSources.userSource.updateItem).toHaveBeenCalledWith(input, {
         hashKey,
         withMetadata: true,
       });
     });
 
-    it('deleteThing calls deleteItem on the dataSource with id', async () => {
+    it('deleteUser calls deleteItem on the dataSource with id', async () => {
       const id = '123';
 
       const dataSources = {
-        thingSource: {
+        userSource: {
           deleteItem: jest.fn(() => Promise.resolve({})),
         },
       };
 
       const {
-        Mutation: { deleteThing },
+        Mutation: { deleteUser },
       } = getResolvers();
 
-      await deleteThing(null, { id }, { dataSources, hashKey });
-      expect(dataSources.thingSource.deleteItem).toHaveBeenCalledWith(id, {
+      await deleteUser(null, { id }, { dataSources, hashKey });
+      expect(dataSources.userSource.deleteItem).toHaveBeenCalledWith(id, {
         hashKey,
         withMetadata: true,
       });

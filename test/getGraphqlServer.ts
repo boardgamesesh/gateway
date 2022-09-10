@@ -1,5 +1,6 @@
 import { ApolloServer } from 'apollo-server';
-import { buildFederatedSchema } from '@apollo/federation';
+import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core';
+import { buildSubgraphSchema } from '@apollo/federation';
 import DataBase from '@brightsole/sleep-talk';
 import { getResolvers } from '../src/resolvers';
 import getTypeDefs from '../src/schema';
@@ -7,20 +8,21 @@ import getTypeDefs from '../src/schema';
 jest.mock('@brightsole/sleep-talk');
 
 export default (context = {}) => {
-  const thingSource = new DataBase({} as any);
+  const userSource = new DataBase({} as any);
 
   const server = new ApolloServer({
-    schema: buildFederatedSchema([
+    schema: buildSubgraphSchema([
       {
         typeDefs: getTypeDefs(),
         resolvers: getResolvers(),
       } as any,
     ]),
     typeDefs: getTypeDefs(),
-    resolvers: getResolvers() as any,
-    dataSources: () => ({ thingSource }),
+    resolvers: getResolvers(),
+    dataSources: () => ({ userSource }),
+    plugins: [ApolloServerPluginInlineTraceDisabled()],
     context,
   });
 
-  return { server, thingSource, context };
+  return { server, userSource, context };
 };

@@ -5,14 +5,12 @@
     "target": "es2016",
     "module": "commonjs",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "sourceMap": true,
     "experimentalDecorators": true,
     "pretty": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true
-  },
-  "files": [
-    "index.ts"
-  ]
+  }
 }

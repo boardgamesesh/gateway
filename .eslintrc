@@ -3,6 +3,9 @@
   "rules": {
     "no-new": "off",
     "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": "off",
+    "import/no-relative-packages": "off",
+    "import/no-import-module-exports": "off",
     "@typescript-eslint/no-unused-vars": ["error", {
       "ignoreRestSiblings": true,
       "argsIgnorePattern": "^_"

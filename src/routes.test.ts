@@ -7,105 +7,105 @@ import getRestServer from '../test/getRestServer';
 describe('getRoutes', () => {
   const hashKey = 'threeve';
 
-  it('GET /things/:id calls getItem on the dataSource with id', async () => {
-    const thing = {
+  it('GET /users/:id calls getItem on the dataSource with id', async () => {
+    const auth = {
       id: '123',
       name: '456',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    const getItem = jest.fn().mockResolvedValueOnce(thing);
+    const getItem = jest.fn().mockResolvedValueOnce(auth);
 
-    const thingsDB = { getItem } as any;
-    const request = getRestServer(thingsDB);
+    const usersDB = { getItem } as any;
+    const request = getRestServer(usersDB);
 
-    const response = await request.get(`/things/${thing.id}`).set('x-user-id', hashKey);
+    const response = await request.get(`/users/${auth.id}`).set('x-user-id', hashKey);
 
-    expect(response.body).toEqual(thing);
-    expect(getItem).toBeCalledWith(thing.id, { hashKey });
+    expect(response.body).toEqual(auth);
+    expect(getItem).toBeCalledWith(auth.id, { hashKey });
   });
 
-  it('GET /things/ calls query on the dataSource with query', async () => {
-    const thing = {
+  it('GET /users/ calls query on the dataSource with query', async () => {
+    const auth = {
       id: '123',
       name: '456',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    const query = jest.fn().mockResolvedValueOnce([thing]);
+    const query = jest.fn().mockResolvedValueOnce([auth]);
 
-    const thingsDB = { query } as any;
-    const request = getRestServer(thingsDB);
+    const usersDB = { query } as any;
+    const request = getRestServer(usersDB);
 
-    const response = await request.get('/things?name=456');
+    const response = await request.get('/users?name=456');
 
-    expect(response.body).toEqual([thing]);
+    expect(response.body).toEqual([auth]);
     expect(query).toBeCalledWith({ name: '456' });
   });
 
-  it('POST /things/ calls createItem on the dataSource with partial', async () => {
-    const partialThing = {
+  it('POST /users/ calls createItem on the dataSource with partial', async () => {
+    const partialUser = {
       id: '123',
       name: '456',
     };
-    const fullThing = {
-      ...partialThing,
+    const fullUser = {
+      ...partialUser,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    const createItem = jest.fn().mockResolvedValueOnce(fullThing);
+    const createItem = jest.fn().mockResolvedValueOnce(fullUser);
 
-    const thingsDB = { createItem } as any;
-    const request = getRestServer(thingsDB);
+    const usersDB = { createItem } as any;
+    const request = getRestServer(usersDB);
 
     const response = await request
-      .post('/things')
-      .send(partialThing)
+      .post('/users')
+      .send(partialUser)
       .set('Content-Type', 'application/json')
       .set('x-user-id', hashKey);
 
-    expect(response.body).toEqual(fullThing);
-    expect(createItem).toBeCalledWith(partialThing, { hashKey });
+    expect(response.body).toEqual(fullUser);
+    expect(createItem).toBeCalledWith(partialUser, { hashKey });
   });
 
-  it('PUT /things/:id calls updateItem on the dataSource with partial', async () => {
-    const partialThing = {
+  it('PUT /users/:id calls updateItem on the dataSource with partial', async () => {
+    const partialUser = {
       id: '123',
       name: '456',
     };
-    const fullThing = {
-      ...partialThing,
+    const fullUser = {
+      ...partialUser,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    const updateItem = jest.fn().mockResolvedValueOnce(fullThing);
+    const updateItem = jest.fn().mockResolvedValueOnce(fullUser);
 
-    const thingsDB = { updateItem } as any;
-    const request = getRestServer(thingsDB);
+    const usersDB = { updateItem } as any;
+    const request = getRestServer(usersDB);
 
     const response = await request
-      .put(`/things/${partialThing.id}`)
-      .send(partialThing)
+      .put(`/users/${partialUser.id}`)
+      .send(partialUser)
       .set('Content-Type', 'application/json')
       .set('x-user-id', hashKey);
 
-    expect(response.body).toEqual(fullThing);
-    expect(updateItem).toBeCalledWith(partialThing, { hashKey });
+    expect(response.body).toEqual(fullUser);
+    expect(updateItem).toBeCalledWith(partialUser, { hashKey });
   });
 
-  it('DELETE /things/:id calls deleteItem on the dataSource with id', async () => {
+  it('DELETE /users/:id calls deleteItem on the dataSource with id', async () => {
     const id = '123';
 
     const deleteItem = jest.fn().mockResolvedValueOnce(null);
 
-    const thingsDB = { deleteItem } as any;
-    const request = getRestServer(thingsDB);
+    const usersDB = { deleteItem } as any;
+    const request = getRestServer(usersDB);
 
-    const response = await request.delete(`/things/${id}`, null).set('x-user-id', hashKey);
+    const response = await request.delete(`/users/${id}`, null).set('x-user-id', hashKey);
 
     expect(response.body).toEqual(null);
     expect(deleteItem).toBeCalledWith(id, { hashKey });

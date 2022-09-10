@@ -3,32 +3,29 @@ import * as express from 'express';
 import * as compression from 'compression';
 import * as depthLimit from 'graphql-depth-limit';
 import { ApolloServer } from 'apollo-server-lambda';
-import { applyMiddleware } from 'graphql-middleware';
-import { buildFederatedSchema } from '@apollo/federation';
+import { buildSubgraphSchema } from '@apollo/federation';
 import { getResolvers } from './resolvers';
-import getThingDatabase from './database';
+import getUserDatabase from './database';
 import getSchema from './schema';
 import getRoutes from './routes';
-import { Thing } from './types';
+import { User } from './types';
 
 const httpHeadersPlugin = require('apollo-server-plugin-http-headers');
 
-const createServer = (thingSource: any) => {
+const createServer = (userSource: any) => {
   const typeDefs = getSchema();
   const resolvers = getResolvers();
 
   // const permissions = getPermissions();
 
   return new ApolloServer({
-    schema: applyMiddleware(
-      buildFederatedSchema([
-        {
-          typeDefs,
-          resolvers,
-        } as any,
-      ])
-      // permissions
-    ),
+    schema: buildSubgraphSchema([
+      {
+        typeDefs,
+        resolvers,
+      } as any,
+    ]),
+    // permissions,
 
     plugins: [httpHeadersPlugin],
     context: async ({ event, context }) => {
@@ -44,14 +41,14 @@ const createServer = (thingSource: any) => {
       };
     },
     validationRules: [depthLimit(7)],
-    dataSources: () => ({ thingSource }),
+    dataSources: () => ({ userSource }),
   });
 };
 
 export default () => {
-  const thingSource = getThingDatabase<Thing>();
+  const userSource = getUserDatabase<User>();
 
-  const server = createServer(thingSource);
+  const server = createServer(userSource);
 
   return server.createHandler({
     expressAppFromMiddleware(middleware) {
@@ -61,7 +58,7 @@ export default () => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
 
-      app.use('/things', getRoutes(thingSource));
+      app.use('/users', getRoutes(userSource));
 
       // if you ever wanted to handle gql uploads
       // app.use(graphqlUploadExpress());
