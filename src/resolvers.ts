@@ -1,42 +1,101 @@
-import { GraphQLDateTime } from 'graphql-iso-date';
-import { GraphQLJSONObject } from 'graphql-type-json';
-import { Query } from '@brightsole/sleep-talk';
-import { User, Input, IdObject, GenericUserPayload, Context } from './types';
+import { Condition } from 'dynamoose';
+import { GraphQLDateTime, GraphQLJSONObject } from 'graphql-scalars';
+import { SESV2 } from 'aws-sdk';
+import { nanoid } from 'nanoid';
+import { Context, IdObject, UserType, Affirmative } from './types';
+import { User } from './models';
 
 export const getResolvers = () => ({
   Query: {
-    user: async (_: any, args: IdObject, { dataSources, hashKey }: Context) =>
-      dataSources.userSource.getItem(args.id, { hashKey, withMetadata: true }),
-    users: async (_: any, args: { input: Query }, { dataSources }: Context) =>
-      dataSources.userSource.query(args.input, { withMetadata: true }),
-    getAllUsers: async (_: any, __: any, { dataSources, hashKey }: Context) =>
-      dataSources.userSource.getAll({ hashKey, withMetadata: true }),
+    user: async (_: any, { id }: { id: string }, { dataSources }: Context) => {
+      await dataSources.userSource.initialize();
+      const foundUser = await User.get(id);
+      return foundUser;
+    },
   },
 
   Mutation: {
-    createUser: (
+    sendMagicLink: async (_: any, { email }: { email: string }): Promise<Affirmative> => {
+      const id = nanoid();
+
+      await User.create(
+        { email, type: 'magic', id, secretToken: nanoid() },
+        { condition: new Condition('email not exists') } // TODO: make it real, idiot
+      );
+
+      const sesClient = new SESV2();
+
+      await new Promise((resolve, reject) => {
+        sesClient.sendEmail(
+          {
+            FromEmailAddress: 'signin@boarganise.com',
+            Destination: {
+              ToAddresses: [email],
+            },
+            Content: {
+              Simple: {
+                Subject: {
+                  Data: 'sign in to boarganise!',
+                  Charset: 'utf-8',
+                },
+                Body: {
+                  Html: {
+                    Data: `<h1>yo sign in idiot</h1><a href="">click here to sign in</a>`,
+                    Charset: 'utf-8',
+                  },
+                },
+              },
+            },
+          },
+          (err, response) => {
+            if (err) reject(err);
+            resolve(response);
+          }
+        );
+      });
+
+      return { ok: true };
+    },
+
+    createMagicUser: async (
       _: any,
-      args: Input,
-      { dataSources, hashKey }: Context
-    ): Promise<GenericUserPayload> =>
-      dataSources.userSource.createItem(args.input, { hashKey, withMetadata: true }),
-    updateUser: (
+      { name, secretToken }: { name: string; secretToken: string },
+      { id }: Context
+    ): Promise<UserType> => {
+      const foundUser = await User.get(id);
+      if (secretToken !== foundUser.secretToken) {
+        throw new Error('Unable to create user with invalid token');
+      }
+
+      const updatedUser = await User.update({ id, name, secretToken: null });
+
+      // TODO: FIGURE OUT WHAT THE FUCK ON THIS TYPE SERIOUSLY DUDE
+      return updatedUser as unknown as UserType;
+    },
+
+    updateUser: async (
       _: any,
-      args: Input,
-      { dataSources, hashKey }: Context
-    ): Promise<GenericUserPayload> =>
-      dataSources.userSource.updateItem(args.input, { hashKey, withMetadata: true }),
-    deleteUser: (
-      _: any,
-      args: IdObject,
-      { dataSources, hashKey }: Context
-    ): Promise<GenericUserPayload> =>
-      dataSources.userSource.deleteItem(args.id, { hashKey, withMetadata: true }),
+      partialUser: Partial<UserType>,
+      { id }: Context
+    ): Promise<UserType> => {
+      if (partialUser.email) {
+        const [existingUser] = await User.scan({ email: partialUser.email }).exec();
+        if (existingUser) throw new Error('unable to change email');
+      }
+
+      const updatedUser = await User.update({ id, ...partialUser });
+
+      // TODO: FIGURE OUT WHAT THE FUCK ON THIS TYPE SERIOUSLY DUDE
+      return updatedUser as unknown as UserType;
+    },
   },
 
   User: {
-    __resolveReference: ({ id }: Partial<User>, { dataSources, hashKey }: Context) =>
-      dataSources.userSource.getItem(id, { hashKey, withMetadata: true }),
+    // for finding out the info of the other users in the system
+    __resolveReference: async ({ id }: IdObject) => {
+      const foundUser = await User.get(id);
+      return { name: foundUser.name, id: foundUser.id };
+    },
   },
 
   DateTime: GraphQLDateTime,
