@@ -4,47 +4,37 @@ export default () => gql`
   scalar DateTime
   scalar JSONObject
 
+  type Settings {
+    darkMode: Boolean
+  }
+
   type User @key(fields: "id") {
     id: ID!
+    email: ID!
     name: String!
+    settings: Settings
     createdAt: DateTime
     updatedAt: DateTime
   }
 
-  input CreateUserInput {
-    name: String!
-  }
-
   input UpdateUserInput {
     id: String!
-    name: String!
+    name: String
+    email: String
+    settings: Settings
   }
 
-  input DeleteUserInput {
-    id: String!
-  }
-
-  type UserPayload {
-    consumedCapacity: Float
-    item: User
-  }
-
-  type UserListPayload {
-    consumedCapacity: Float
-    lastScannedId: ID
-    items: [User]
-    count: Int
+  type AffirmativeEmpty {
+    ok: Boolean
   }
 
   type Query {
-    auth(id: ID!): UserPayload
-    users(input: JSONObject): UserListPayload
-    getAllUsers: UserListPayload
+    user(id: ID!): User
   }
 
   type Mutation {
-    createUser(input: CreateUserInput!): UserPayload
-    updateUser(input: UpdateUserInput!): UserPayload
-    deleteUser(id: ID!): UserPayload
+    sendMagicLink(email: String): AffirmativeEmpty
+    updateUser(input: UpdateUserInput!): User
+    createMagicUser(name: String!): User
   }
 `;

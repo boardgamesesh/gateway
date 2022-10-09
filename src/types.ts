@@ -1,12 +1,14 @@
-export type User = {
-  id: string;
-  name: string;
+import { Table } from 'dynamoose';
+
+export type UserType = {
+  secretToken: string | null;
   createdAt: string;
   updatedAt: string;
-};
-
-export type Input = {
-  input: Partial<User>;
+  settings: any;
+  email: string;
+  name: string;
+  type: string; // magic | google | etc.
+  id: string;
 };
 
 export type IdObject = {
@@ -14,11 +16,21 @@ export type IdObject = {
 };
 
 export type Context = {
-  dataSources: any;
-  hashKey?: string;
+  dataSources: {
+    userSource: typeof Table;
+  };
+  callbackWaitsForEmptyEventLoop?: boolean;
+  email: string;
+  type: string;
+  id: string;
 };
 
-export type GenericUserPayload = {
-  success: boolean;
-  item?: User;
+export type Token = {
+  id: string;
+  type: string; // magic | google | etc.
+  email: string;
+};
+
+export type Affirmative = {
+  ok: Boolean;
 };
