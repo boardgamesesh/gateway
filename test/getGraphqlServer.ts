@@ -1,14 +1,14 @@
 import { ApolloServer } from 'apollo-server';
 import { ApolloServerPluginInlineTraceDisabled } from 'apollo-server-core';
 import { buildSubgraphSchema } from '@apollo/federation';
-import DataBase from '@brightsole/sleep-talk';
+import dynamoose from 'dynamoose';
 import { getResolvers } from '../src/resolvers';
 import getTypeDefs from '../src/schema';
-
-jest.mock('@brightsole/sleep-talk');
+import { User } from '../src/models';
 
 export default (context = {}) => {
-  const userSource = new DataBase({} as any);
+  dynamoose.aws.ddb.local();
+  const userSource = new dynamoose.Table('Users', [User]);
 
   const server = new ApolloServer({
     schema: buildSubgraphSchema([
