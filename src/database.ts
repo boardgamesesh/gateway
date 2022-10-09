@@ -1,11 +1,17 @@
-import Database from '@brightsole/sleep-talk';
+import dynamoose from 'dynamoose';
+import { User } from './models';
 import getEnv from './env';
 
-const { nanoid } = require('nanoid');
-
-export default <T>() =>
-  new Database<T>({
-    tableName: getEnv().tableName,
+export default () => {
+  const db = new dynamoose.aws.ddb.DynamoDB({
+    credentials: {
+      secretAccessKey: getEnv().secretKey,
+      accessKeyId: getEnv().accessKeyId,
+    },
     region: getEnv().region,
-    getId: nanoid,
   });
+
+  dynamoose.aws.ddb.set(db);
+
+  return new dynamoose.Table('Users', [User]);
+};
