@@ -1,9 +1,9 @@
-import depthLimit from 'graphql-depth-limit';
 import { ApolloServer } from 'apollo-server-lambda';
 import { buildSubgraphSchema } from '@apollo/federation';
-import { setContext } from './auth';
-import { getResolvers } from './resolvers';
+import { maxDepthRule } from '@escape.tech/graphql-armor-max-depth';
 import initialiseUserDatabase from './database';
+import { getResolvers } from './resolvers';
+import { setContext } from './auth';
 import getSchema from './schema';
 
 // still no types for this library
@@ -19,12 +19,12 @@ export const createServer = () => {
       {
         typeDefs,
         resolvers,
-      } as any,
+      },
     ]),
 
     plugins: [httpHeadersPlugin],
     context: ({ event, context }) => setContext({ event, context }),
-    validationRules: [depthLimit(7)],
+    validationRules: [maxDepthRule({ n: 7 })],
     dataSources: () => ({ userSource }),
   });
 

@@ -21,6 +21,9 @@ export function Api({ stack }: StackContext) {
     server: {
       handler: 'server.createServer',
       memorySize: 1024,
+      bundle: {
+        format: 'cjs',
+      },
     },
   });
 

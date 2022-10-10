@@ -7,7 +7,13 @@ endef
 test: ;$(call print,Running tests); \
 	npm run test
 
-local-deploy: ;$(call print,Deploying from local); \
-	npx sst start --profile boarganise
+start: ;$(call print,Starting local dev environment); \
+	npx sst start --profile boarganise --stage dev
 
-.PHONY: seed test coverage start local-deploy local-seed
+deploy: ;$(call print,Starting local dev environment); \
+	npx sst deploy --profile boarganise --stage prod
+
+destroy: ;$(call print,Destroying nonlocal resources); \
+	npx sst remove --profile boarganise --stage dev
+
+.PHONY: test start deploy destroy

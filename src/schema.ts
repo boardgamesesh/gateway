@@ -2,7 +2,11 @@ import { gql } from 'apollo-server-lambda';
 
 export default () => gql`
   scalar DateTime
-  scalar JSONObject
+  scalar GraphQLJSONObject
+
+  input SettingsInput {
+    darkMode: Boolean
+  }
 
   type Settings {
     darkMode: Boolean
@@ -21,7 +25,7 @@ export default () => gql`
     id: String!
     name: String
     email: String
-    settings: Settings
+    settings: SettingsInput
   }
 
   type AffirmativeEmpty {
