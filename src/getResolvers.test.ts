@@ -1,4 +1,4 @@
-// import { getResolvers } from './resolvers';
+// import getResolvers from './resolvers';
 
 describe('Resolvers', () => {
   it('tests ok', () => {
