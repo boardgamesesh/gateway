@@ -47,7 +47,7 @@ export default async (event: GatewayEvent) => {
       });
     }
   } catch (err) {
-    console.error('this was a mistake', err);
+    /* console.error('unauthenticated request', err); */
   }
 
   return {
