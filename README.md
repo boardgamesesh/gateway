@@ -5,11 +5,17 @@
 - log into the aws account
 - create a new user, assign permissions directly to it, the only permission being: administrator access
 - copy the KEY ID and the SECRET ACCESS KEY
-- add them to the `./aws/credentials` like this:
+- add them to the `~/.aws/credentials` like this:
 ```
 [boarganise]
 aws_access_key_id = KEY_ID
 aws_secret_access_key = SECRET_KEY
+```
+- add configuration to your `~/.aws/config` as well:
+```
+[profile boarganise]
+output=json
+region=ap-southeast-2
 ```
 
 ### RUNNING THE SERVICE
