@@ -19,33 +19,13 @@ export function Api({ stack }: StackContext) {
       },
     },
     server: {
-      handler: 'server.createServer',
+      handler: 'server.handler',
       memorySize: 1024,
       bundle: {
-        format: 'cjs',
+        format: 'esm',
       },
     },
   });
-
-  // const api = new ApiGateway(stack, 'api', {
-  //   defaults: {
-  //     function: {
-  //       permissions: [db.table],
-  //       config: [db.TABLE_NAME],
-  //     },
-  //   },
-  //   routes: {
-  //     'POST /graphql': {
-  //       type: 'pothos',
-  //       function: {
-  //         handler: 'functions/graphql/graphql.handler',
-  //       },
-  //       schema: 'services/functions/graphql/schema.ts',
-  //       output: 'graphql/schema.graphql',
-  //       commands: ['npx genql --output ./graphql/genql --schema ./graphql/schema.graphql --esm'],
-  //     },
-  //   },
-  // });
 
   new Config.Parameter(stack, 'API_URL', {
     value: api.url,
