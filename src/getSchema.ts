@@ -2,7 +2,7 @@ import { gql } from 'graphql-tag';
 
 export default () => gql`
   scalar DateTime
-  scalar GraphQLJSONObject
+  scalar JSONObject
 
   input SettingsInput {
     darkMode: Boolean
@@ -39,6 +39,6 @@ export default () => gql`
   type Mutation {
     sendMagicLink(email: String!): AffirmativeEmpty
     updateUser(input: UpdateUserInput!): User
-    createMagicUser(name: String!): User
+    createMagicUser(name: String!, secretToken: String!): User
   }
 `;

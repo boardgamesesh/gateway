@@ -16,6 +16,7 @@ const setContext: ContextFunction<[LambdaContextFunctionArgument], BaseContext> 
   const MagicUser = model<MagicUserItem>(getEnv().tableName, MagicUserSchema);
 
   return {
+    ...context,
     MagicUser,
     setCookies,
     setHeaders,

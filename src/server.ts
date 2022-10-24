@@ -6,7 +6,7 @@ import getResolvers from './getResolvers';
 import setContext from './setContext';
 import getSchema from './getSchema';
 
-export const createServer = () => {
+const createServer = () => {
   const typeDefs = getSchema();
   const resolvers = getResolvers();
 

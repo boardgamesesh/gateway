@@ -5,12 +5,7 @@ import { Context, IdObject, UserType, Affirmative } from './types';
 
 export default () => ({
   Query: {
-    user: async (_: any, args: { id: string }, { MagicUser }: Context) => {
-      const { id } = args;
-      // console.log('id', id);
-
-      return MagicUser.get({ id });
-    },
+    user: async (_: any, { id }: { id: string }, { MagicUser }: Context) => MagicUser.get({ id }),
   },
 
   Mutation: {
@@ -25,6 +20,9 @@ export default () => ({
       await MagicUser.create({ email, type: 'magic', id, secretToken });
 
       const sesClient = new SESV2({ region: 'ap-southeast-2' });
+
+      // TODO: 1. generate the secret token that needs to be added to a request to authenticate this user page
+      // TODO: 2. validate our stupid email address for sends.
 
       await sesClient
         .sendEmail({
@@ -55,7 +53,7 @@ export default () => ({
     createMagicUser: async (
       _: any,
       { name, secretToken }: { name: string; secretToken: string },
-      { id, MagicUser }: Context
+      { id, MagicUser }: Context // this id comes from an auth token that our hypthetical un-signed-in user won't have.
     ): Promise<UserType> => {
       const foundUser = await MagicUser.get(id as string);
 
@@ -68,12 +66,12 @@ export default () => ({
 
     updateUser: async (
       _: any,
-      partialUser: Partial<UserType>,
-      { id, MagicUser }: Context
+      { input: partialUser }: { input: Partial<UserType> },
+      { id, email, MagicUser }: Context
     ): Promise<UserType | undefined> => {
       if (partialUser.email) {
         const [existingUser] = await MagicUser.scan({ email: partialUser.email }).exec();
-        if (existingUser) throw new Error('unable to change email');
+        if (existingUser && partialUser.email !== email) throw new Error('unable to change email');
       }
 
       return MagicUser.update({ id, ...partialUser });
