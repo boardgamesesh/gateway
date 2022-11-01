@@ -2,10 +2,17 @@ import { GraphQLDateTime, GraphQLJSONObject } from 'graphql-scalars';
 import SESV2 from 'aws-sdk/clients/sesv2';
 import { nanoid } from 'nanoid';
 import { Context, IdObject, UserType, Affirmative } from './types';
+import { createToken, createCookie } from './auth';
 
 export default () => ({
   Query: {
-    user: async (_: any, { id }: { id: string }, { MagicUser }: Context) => MagicUser.get({ id }),
+    // notice the id isn't coming from params anymore
+    // the auth context will deliver their user id
+    user: async (_: any, _args: any, { MagicUser, id }: Context) => {
+      if (!id) throw new Error('Unable to get, not signed in');
+
+      return MagicUser.get({ id });
+    },
   },
 
   Mutation: {
@@ -14,31 +21,33 @@ export default () => ({
       { email }: { email: string },
       { MagicUser }: Context
     ): Promise<Affirmative> => {
-      const id = nanoid();
       const secretToken = nanoid();
 
-      await MagicUser.create({ email, type: 'magic', id, secretToken });
+      let [user] = await MagicUser.query('email').eq(email).using('email').exec();
+
+      if (!user) {
+        user = await MagicUser.create({ email, type: 'magic', id: nanoid(), secretToken });
+      } else {
+        user = await MagicUser.update({ id: user.id, secretToken });
+      }
 
       const sesClient = new SESV2({ region: 'ap-southeast-2' });
 
-      // TODO: 1. generate the secret token that needs to be added to a request to authenticate this user page
-      // TODO: 2. validate our stupid email address for sends.
-
       await sesClient
         .sendEmail({
-          FromEmailAddress: 'signin@boarganise.com',
+          FromEmailAddress: 'signin@boardgamesesh.com',
           Destination: {
             ToAddresses: [email],
           },
           Content: {
             Simple: {
               Subject: {
-                Data: 'sign in to boarganise!',
+                Data: 'sign in to board game sesh!',
                 Charset: 'utf-8',
               },
               Body: {
                 Html: {
-                  Data: `<h1>yo sign in idiot</h1><a href="https://localhost:9001/signup?token=${secretToken}">click here to sign in</a>`,
+                  Data: `<h1>yo sign in idiot</h1><a href="https://boardgamesesh.com/signup?token=${secretToken}&id=${user.id}">click here to sign in</a>`,
                   Charset: 'utf-8',
                 },
               },
@@ -50,18 +59,23 @@ export default () => ({
       return { ok: true };
     },
 
-    createMagicUser: async (
+    // one of the few methods where id is sent in via mutation arguments
+    signIn: async (
       _: any,
-      { name, secretToken }: { name: string; secretToken: string },
-      { id, MagicUser }: Context // this id comes from an auth token that our hypthetical un-signed-in user won't have.
+      { id, secretToken }: { id: string; secretToken: string },
+      { MagicUser, setCookies, setHeaders }: Context
     ): Promise<UserType> => {
       const foundUser = await MagicUser.get(id as string);
 
       if (secretToken !== foundUser.secretToken) {
-        throw new Error('Unable to create user with invalid token');
+        throw new Error('Unable to sign in with invalid token');
       }
 
-      return MagicUser.update({ id, name, secretToken: null });
+      const validToken = createToken({ email: foundUser.email, type: foundUser.type, id });
+      setCookies.push(createCookie(validToken));
+      setHeaders.push(validToken); // for frontend redirection help
+
+      return MagicUser.update({ id, secretToken: null });
     },
 
     updateUser: async (

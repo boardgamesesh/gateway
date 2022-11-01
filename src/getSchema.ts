@@ -39,6 +39,6 @@ export default () => gql`
   type Mutation {
     sendMagicLink(email: String!): AffirmativeEmpty
     updateUser(input: UpdateUserInput!): User
-    createMagicUser(name: String!, secretToken: String!): User
+    signIn(id: ID!, secretToken: ID!): User
   }
 `;

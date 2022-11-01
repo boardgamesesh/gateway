@@ -9,6 +9,11 @@ export function Database({ stack }: StackContext) {
     primaryIndex: {
       partitionKey: 'id',
     },
+    globalIndexes: {
+      email: {
+        partitionKey: 'email',
+      },
+    },
     cdk: {
       table: {
         removalPolicy: stack.stage === 'dev' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,

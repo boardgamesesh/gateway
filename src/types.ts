@@ -31,8 +31,8 @@ export type IdObject = {
 
 export type Context = {
   MagicUser: Model<MagicUserItem>;
-  setCookies: string[];
-  setHeaders: string[];
+  setCookies: any[];
+  setHeaders: any[];
   email?: string;
   type?: string;
   id?: string;
