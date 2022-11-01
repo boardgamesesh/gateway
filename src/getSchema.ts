@@ -16,6 +16,7 @@ export default () => gql`
     id: ID!
     email: ID!
     name: String!
+    location: String
     settings: Settings
     createdAt: DateTime
     updatedAt: DateTime
@@ -25,6 +26,7 @@ export default () => gql`
     id: String!
     name: String
     email: String
+    location: String
     settings: SettingsInput
   }
 

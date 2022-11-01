@@ -19,4 +19,4 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-    - run: npx sst deploy --stage dev
+    - run: npx sst deploy --stage staging

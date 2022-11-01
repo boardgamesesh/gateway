@@ -2,9 +2,9 @@ import {
   // Api as ApiGateway,
   StackContext,
   GraphQLApi,
-  Config,
   use,
 } from '@serverless-stack/resources';
+import * as awsSSM from 'aws-cdk-lib/aws-ssm';
 import { Database } from './Database';
 
 export function Api({ stack }: StackContext) {
@@ -27,12 +27,14 @@ export function Api({ stack }: StackContext) {
     },
   });
 
-  new Config.Parameter(stack, 'API_URL', {
-    value: api.url,
-  });
-
   stack.addOutputs({
     API: api.url,
+  });
+
+  new awsSSM.StringParameter(stack, 'auth endpoint', {
+    parameterName: `${stack.stage}/auth-endpoint`,
+    description: `auth service endpoint for the ${stack.stage} stage`,
+    stringValue: api.url,
   });
 
   return api;
