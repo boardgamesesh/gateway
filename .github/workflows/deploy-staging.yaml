@@ -26,6 +26,9 @@ jobs:
       id: deploy
       uses: quenginedev/sst-deploy@main
       with:
-        access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
         secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: ${{ secrets.AWS_DEFAULT_REGION }}
+        access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+        region: ${{ secrets.AWS_REGION }}
+        pkg-manager: npm
+        stage: staging
+        path: './'

@@ -12,6 +12,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint --fix .",
+    "deploy": "sst deploy",
     "precommit": "lint-staged",
     "prepush": "jest",
     "test": "jest",
