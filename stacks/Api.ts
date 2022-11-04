@@ -32,7 +32,7 @@ export function Api({ stack }: StackContext) {
   });
 
   new awsSSM.StringParameter(stack, 'auth endpoint', {
-    parameterName: `${stack.stage}/auth-endpoint`,
+    parameterName: `/${stack.stage}/auth-endpoint`,
     description: `auth service endpoint for the ${stack.stage} stage`,
     stringValue: api.url,
   });

@@ -5,6 +5,7 @@ export function Database({ stack }: StackContext) {
   const table = new Table(stack, 'users-table', {
     fields: {
       id: 'string',
+      email: 'string',
     },
     primaryIndex: {
       partitionKey: 'id',
