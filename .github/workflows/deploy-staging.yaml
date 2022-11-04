@@ -1,4 +1,4 @@
-name: Deploy main branch
+name: Deploy main branch to staging
 
 on:
   push:
@@ -22,13 +22,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
 
-    - name: Deploy SST app
-      id: deploy
-      uses: quenginedev/sst-deploy@main
+    - name: Configure AWS creds for deployment
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-        region: ${{ secrets.AWS_REGION }}
-        pkg-manager: npm
-        stage: staging
-        path: './'
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - run: npx sst deploy --stage staging
