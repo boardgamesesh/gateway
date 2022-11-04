@@ -7,7 +7,7 @@
     "package",
     "boardgamesesh"
   ],
-  "repository": "git@github.com:boarganize/auth.git",
+  "repository": "git@github.com:boardgamesesh/auth.git",
   "author": "Drew Showalter <maelstroswim@gmail.com>",
   "license": "MIT",
   "scripts": {
