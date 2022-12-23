@@ -12,27 +12,26 @@ const twoWeeks = 20 * 24 * 60 * 60 * 1000;
 export const createToken = (data: Token, expiresIn: string = '35d') =>
   jwt.sign(data, getEnv().jwtSecret, { expiresIn });
 
-export const createCookie = (validToken: string) => ({
-  name: 'auth cookie',
-  value: validToken,
-  options: {
-    expires: new Date(Date.now() + twoWeeks),
-    domain: 'boardgamesesh.com',
-    maxAge: twoWeeks / 1000,
-    httpOnly: true,
-    sameSite: true,
-    secure: true,
-    path: '/',
-  },
-});
+export const createCookie = (validToken: string) =>
+  JSON.stringify({
+    name: 'auth cookie',
+    value: validToken,
+    options: {
+      expires: new Date(Date.now() + twoWeeks),
+      domain: 'boardgamesesh.com',
+      maxAge: twoWeeks / 1000,
+      httpOnly: true,
+      sameSite: true,
+      secure: true,
+      path: '/',
+    },
+  });
 
 export const verifyToken = (token: string = 'bad token') =>
   jwt.verify(token, getEnv().jwtSecret) as DecodedToken;
 
 // sets the auth header so we can securely be logged in by the magic link
-export default async (event: GatewayEvent) => {
-  const setHeaders = [] as any[];
-  const setCookies = [] as any[];
+export default async (event: GatewayEvent, headers: { [name: string]: string }) => {
   let email;
   let type;
   let id;
@@ -46,15 +45,15 @@ export default async (event: GatewayEvent) => {
       // set a cookie if the token is near the expiry
 
       const validToken = createToken({ email, type, id });
-      setCookies.push(createCookie(validToken));
+      // eslint-disable-next-line no-param-reassign
+      headers.cookie = createCookie(validToken);
     }
   } catch (err) {
     /* console.error('unauthenticated request', err); */
   }
 
   return {
-    setCookies,
-    setHeaders,
+    headers,
     event,
     email,
     type,

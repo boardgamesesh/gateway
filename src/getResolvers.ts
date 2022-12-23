@@ -47,7 +47,7 @@ export default () => ({
               },
               Body: {
                 Html: {
-                  Data: `<h1>yo sign in idiot</h1><a href="https://boardgamesesh.com/signup?token=${secretToken}&id=${user.id}">click here to sign in</a>`,
+                  Data: `<h1>yo sign in idiot</h1><a href="https://boardgamesesh.com/login?token=${secretToken}&id=${user.id}">click here to sign in</a>`,
                   Charset: 'utf-8',
                 },
               },
@@ -63,7 +63,7 @@ export default () => ({
     signIn: async (
       _: any,
       { id, secretToken }: { id: string; secretToken: string },
-      { MagicUser, setCookies, setHeaders }: Context
+      { MagicUser, headers }: Context
     ): Promise<UserType> => {
       const foundUser = await MagicUser.get(id as string);
 
@@ -72,11 +72,13 @@ export default () => ({
       }
 
       const validToken = createToken({ email: foundUser.email, type: foundUser.type, id });
-      setCookies.push(createCookie(validToken));
-      setHeaders.push(validToken); // for frontend redirection help
+      // eslint-disable-next-line no-param-reassign
+      headers.cookie = createCookie(validToken);
 
       return MagicUser.update({ id, secretToken: null });
     },
+
+    signOut: () => ({ ok: true }), // no headers cookie, no auth
 
     updateUser: async (
       _: any,

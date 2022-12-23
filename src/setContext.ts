@@ -1,6 +1,6 @@
 import { model } from 'dynamoose';
 import type { BaseContext, ContextFunction } from '@apollo/server';
-import type { LambdaContextFunctionArgument, MagicUserItem, Context } from './types';
+import type { LambdaContextFunctionArgument, MagicUserItem } from './types';
 import { MagicUserSchema } from './schemas';
 import getAuth from './auth';
 import getEnv from './getEnv';
@@ -9,17 +9,16 @@ import getEnv from './getEnv';
 const setContext: ContextFunction<[LambdaContextFunctionArgument], BaseContext> = async ({
   event,
   context,
-}): Promise<Context> => {
+}) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
-  const { setCookies, setHeaders, email, type, id } = await getAuth(event);
+  const { email, type, id } = await getAuth(event, context.headers);
   const MagicUser = model<MagicUserItem>(getEnv().tableName, MagicUserSchema);
 
   return {
     ...context,
     MagicUser,
-    setCookies,
-    setHeaders,
+    headers: context.headers,
     event,
     email,
     type,

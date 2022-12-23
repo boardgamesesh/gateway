@@ -42,5 +42,6 @@ export default () => gql`
     sendMagicLink(email: String!): AffirmativeEmpty
     updateUser(input: UpdateUserInput!): User
     signIn(id: ID!, secretToken: ID!): User
+    signOut: AffirmativeEmpty
   }
 `;

@@ -17,13 +17,23 @@ const createServer = () => {
         resolvers,
       },
     ]),
-
     validationRules: [maxDepthRule({ n: 7 })],
   });
 
   return server;
 };
 
-export const handler = startServerAndCreateLambdaHandler(createServer(), {
-  context: setContext,
-});
+export const handler = async (event: any, context: any, callback: any) => {
+  const headers = {};
+  const apolloHandler = startServerAndCreateLambdaHandler(createServer(), {
+    context: (arg: any) => setContext({ event: arg.event, context: { ...arg.context, headers } }),
+  });
+  const response = await apolloHandler(event, context, callback);
+  return {
+    ...response,
+    headers: {
+      ...headers,
+      ...response?.headers,
+    },
+  };
+};

@@ -7,10 +7,12 @@ import type {
   APIGatewayProxyEvent,
 } from 'aws-lambda';
 
+export type Headers = { [key: string]: string };
+
 export type GatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2;
 export interface LambdaContextFunctionArgument {
   event: GatewayEvent;
-  context: LambdaContext;
+  context: LambdaContext & { headers: Headers };
 }
 
 export type UserType = {
@@ -31,8 +33,7 @@ export type IdObject = {
 
 export type Context = {
   MagicUser: Model<MagicUserItem>;
-  setCookies: any[];
-  setHeaders: any[];
+  headers: Headers;
   email?: string;
   type?: string;
   id?: string;

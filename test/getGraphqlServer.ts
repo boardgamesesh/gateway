@@ -3,15 +3,19 @@ import { ApolloServerPluginInlineTraceDisabled } from '@apollo/server/plugin/dis
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import getResolvers from '../src/getResolvers';
 import getTypeDefs from '../src/getSchema';
+import { Context } from '../src/types';
 
-export default (context: any = {}) =>
-  new ApolloServer<typeof context>({
-    schema: buildSubgraphSchema([
-      {
-        typeDefs: getTypeDefs(),
-        resolvers: getResolvers(),
-      },
-    ]),
+export default () =>
+  new ApolloServer<Context>(
+    {
+      schema: buildSubgraphSchema([
+        {
+          typeDefs: getTypeDefs(),
+          resolvers: getResolvers(),
+        },
+      ]),
 
-    plugins: [ApolloServerPluginInlineTraceDisabled()],
-  });
+      plugins: [ApolloServerPluginInlineTraceDisabled()],
+    }
+    // { context: () => context }
+  );

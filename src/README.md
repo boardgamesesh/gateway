@@ -24,7 +24,7 @@
 ** USER LOOKUP NON-SENSITIVE INFORMATION **
 1. ANY user requests a user via id
 2. only the name and id are returned so that users can see their friends
-3. TODO: send user profile picture/generated pic hash once we generate them
+3. TODO: send user profile picture/generated pic hash once we generate themz
 
 ## TODO
 1. FIX THE DAMNED TESTS

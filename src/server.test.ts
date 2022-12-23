@@ -27,7 +27,15 @@ describe('Resolver full path', () => {
       }
     `;
 
-    const create = jest.fn();
+    const create = jest.fn().mockImplementationOnce(() => ({ id: '123' }));
+    // TODO: simplify the nested dot call mocking with proxies or just a self referencing object
+    const query = jest.fn().mockImplementation(() => ({
+      eq: jest.fn().mockImplementation(() => ({
+        using: jest.fn().mockImplementation(() => ({
+          exec: jest.fn().mockImplementation(() => []),
+        })),
+      })),
+    }));
 
     const { body } = (await server.executeOperation(
       {
@@ -36,20 +44,60 @@ describe('Resolver full path', () => {
       },
       {
         contextValue: {
-          setHeaders: { push: jest.fn() },
-          setCookies: { push: jest.fn() },
-          MagicUser: { create },
+          MagicUser: { create, query } as any,
+          event: {} as any,
+          headers: {},
         },
       }
     )) as any;
 
     expect(body.singleResult.errors).toBeFalsy();
     expect(body.singleResult.data).toEqual({ sendMagicLink: { ok: true } });
+    expect(query).toHaveBeenCalledWith('email');
     expect(create).toHaveBeenCalledWith({
       email: 'bob@example.com',
       type: 'magic',
       id: expect.any(String),
       secretToken: expect.any(String),
     });
+  });
+
+  it('also works with the handler to set headers properly', async () => {
+    const server = getGraphqlServer();
+    new MockSES();
+
+    const signInMutation = gql`
+      mutation SignIn($id: ID!, $secretToken: ID!) {
+        signIn(id: $id, secretToken: $secretToken) {
+          id
+          email
+        }
+      }
+    `;
+
+    const get = jest.fn().mockImplementationOnce(() => ({ id: '123', secretToken: 'valid' }));
+    const update = jest.fn().mockImplementationOnce(() => ({ id: '123', email: 'guy@fake.com' }));
+
+    const headers = {} as any;
+
+    const { body } = (await server.executeOperation(
+      {
+        query: signInMutation,
+        variables: { id: '123', secretToken: 'valid' },
+      },
+      {
+        contextValue: {
+          MagicUser: { get, update } as any,
+          event: {} as any,
+          headers,
+        },
+      }
+    )) as any;
+
+    expect(body.singleResult.errors).toBeFalsy();
+    expect(body.singleResult.data).toEqual({ signIn: { id: '123', email: 'guy@fake.com' } });
+    expect(get).toHaveBeenCalledWith('123');
+    expect(update).toHaveBeenCalledWith({ id: '123', secretToken: null });
+    expect(headers.cookie).toEqual(expect.any(String));
   });
 });
