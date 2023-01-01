@@ -32,7 +32,7 @@ describe('Resolver full path', () => {
     const query = jest.fn().mockImplementation(() => ({
       eq: jest.fn().mockImplementation(() => ({
         using: jest.fn().mockImplementation(() => ({
-          exec: jest.fn().mockImplementation(() => []),
+          exec: jest.fn().mockResolvedValue([]),
         })),
       })),
     }));
