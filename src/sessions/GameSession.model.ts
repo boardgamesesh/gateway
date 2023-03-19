@@ -31,6 +31,7 @@ export default new Schema({
     type: Array,
     schema: [
       {
+        type: Object,
         name: { type: String },
         links: { type: Array, schema: [String] },
       },
@@ -41,6 +42,7 @@ export default new Schema({
     type: Array,
     schema: [
       {
+        type: Object,
         winnerIds: { type: Array, schema: [String] },
         gameName: { type: String },
         scores: { type: Array, schema: [Number] },
