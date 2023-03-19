@@ -1,4 +1,4 @@
-# auth
+# GATEWAY
 
 ## INFO
 ### BEFORE RUNNING THE SERVICE
@@ -7,13 +7,13 @@
 - copy the KEY ID and the SECRET ACCESS KEY
 - add them to the `~/.aws/credentials` like this:
 ```
-[boarganise]
+[boardgamesession]
 aws_access_key_id = KEY_ID
 aws_secret_access_key = SECRET_KEY
 ```
 - add configuration to your `~/.aws/config` as well:
 ```
-[profile boarganise]
+[profile boardgamesession]
 output=json
 region=ap-southeast-2
 ```
@@ -26,5 +26,6 @@ deploy the service to the production environment once changes approved with `mak
 run the command `make test`
 
 ## TODOS
-1. test setups are all pretty broken after the move to SST
-2. load `.env` credits, and solve a way to have them stored in the `config` object instead of **only on drew's machine**
+1. need new tests on the new code
+2. more documentation on the hairy bits, like the invites pathway being a bit clunky
+3. support multi-invites
