@@ -2,7 +2,7 @@ import { Config, StackContext, Table } from '@serverless-stack/resources';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
 export function Database({ stack }: StackContext) {
-  const table = new Table(stack, 'users-table', {
+  const usersTable = new Table(stack, 'users-table', {
     fields: {
       id: 'string',
       email: 'string',
@@ -22,10 +22,63 @@ export function Database({ stack }: StackContext) {
     },
   });
 
+  const gameSessionTable = new Table(stack, 'game-sessions-table', {
+    fields: {
+      id: 'string',
+      ownerId: 'string',
+    },
+    primaryIndex: {
+      partitionKey: 'id',
+    },
+    globalIndexes: {
+      ownerId: {
+        partitionKey: 'ownerId',
+      },
+    },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === 'dev' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
+  });
+
+  const invitesTable = new Table(stack, 'game-sessions-table', {
+    fields: {
+      id: 'string',
+      userId: 'string',
+      sessionId: 'string',
+    },
+    primaryIndex: {
+      partitionKey: 'id',
+    },
+    globalIndexes: {
+      userId: {
+        partitionKey: 'userId',
+      },
+      sessionId: {
+        partitionKey: 'sessionId',
+      },
+    },
+    cdk: {
+      table: {
+        removalPolicy: stack.stage === 'dev' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
+  });
+
   return {
-    table,
-    TABLE_NAME: new Config.Parameter(stack, 'USERS_TABLE_NAME', {
-      value: table.tableName,
+    usersTable,
+    invitesTable,
+    gameSessionTable,
+
+    USERS_TABLE_NAME: new Config.Parameter(stack, 'USERS_TABLE_NAME', {
+      value: usersTable.tableName,
+    }),
+    GAME_SESSIONS_TABLE_NAME: new Config.Parameter(stack, 'GAME_SESSION_TABLE_NAME', {
+      value: gameSessionTable.tableName,
+    }),
+    INVITES_TABLE_NAME: new Config.Parameter(stack, 'INVITES_TABLE_NAME', {
+      value: invitesTable.tableName,
     }),
   };
 }

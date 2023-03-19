@@ -13,8 +13,12 @@ export function Api({ stack }: StackContext) {
   const api = new GraphQLApi(stack, 'Api', {
     defaults: {
       function: {
-        permissions: [db.table, 'ses:SendEmail'],
-        environment: { TABLE_NAME: db.table.tableName },
+        permissions: [db.usersTable, db.gameSessionTable, db.invitesTable, 'ses:SendEmail'],
+        environment: {
+          USERS_TABLE_NAME: db.usersTable.tableName,
+          INVITES_TABLE_NAME: db.invitesTable.tableName,
+          GAME_SESSIONS_TABLE_NAME: db.gameSessionTable.tableName,
+        },
         timeout: 20,
       },
     },
@@ -31,9 +35,9 @@ export function Api({ stack }: StackContext) {
     API: api.url,
   });
 
-  new awsSSM.StringParameter(stack, 'auth endpoint', {
-    parameterName: `/${stack.stage}/auth-endpoint`,
-    description: `auth service endpoint for the ${stack.stage} stage`,
+  new awsSSM.StringParameter(stack, 'gateway endpoint', {
+    parameterName: `/${stack.stage}/gateway-endpoint`,
+    description: `gateway service endpoint for the ${stack.stage} stage`,
     stringValue: api.url,
   });
 
