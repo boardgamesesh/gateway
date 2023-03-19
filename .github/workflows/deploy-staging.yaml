@@ -29,4 +29,4 @@ jobs:
         aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - run: npx sst deploy --stage staging
+    - run: npx sst destroy --stage staging
