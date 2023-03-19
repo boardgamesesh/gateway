@@ -1,5 +1,5 @@
 import * as SESV2 from 'aws-sdk/clients/sesv2';
-import getResolvers from './getResolvers';
+import getResolvers from '../getResolvers';
 
 jest.mock('aws-sdk/clients/sesv2', () => jest.createMockFromModule('aws-sdk/clients/sesv2'));
 
@@ -18,16 +18,14 @@ describe('Resolvers', () => {
         const user = await Query.user(null, null, {
           MagicUser,
           id: 'user-id',
-          headers: {},
-          event: {},
-        });
+        } as any);
 
         expect(user).toEqual(expectedUser);
         expect(MagicUser.get).toHaveBeenCalledWith({ id: 'user-id' });
       });
 
       it('throws an error when the id is not provided in the context', async () => {
-        await expect(Query.user(null, null, { MagicUser, headers: {}, event: {} })).rejects.toThrow(
+        await expect(Query.user(null, null, { MagicUser } as any)).rejects.toThrow(
           'Unable to get, not signed in'
         );
       });
@@ -60,11 +58,7 @@ describe('Resolvers', () => {
             .mockImplementation(() => ({ promise: jest.fn().mockResolvedValue({}) })),
         }));
 
-        const response = await Mutation.sendMagicLink(
-          null,
-          { email },
-          { MagicUser, headers: {}, event: {} }
-        );
+        const response = await Mutation.sendMagicLink(null, { email }, { MagicUser } as any);
 
         expect(response).toEqual(expectedResponse);
         expect(MagicUser.query).toHaveBeenCalledWith('email');
@@ -102,11 +96,7 @@ describe('Resolvers', () => {
             .mockImplementation(() => ({ promise: jest.fn().mockResolvedValue({}) })),
         }));
 
-        const response = await Mutation.sendMagicLink(
-          null,
-          { email },
-          { MagicUser, headers: {}, event: {} }
-        );
+        const response = await Mutation.sendMagicLink(null, { email }, { MagicUser } as any);
 
         expect(response).toEqual(expectedResponse);
         expect(MagicUser.query).toHaveBeenCalledWith('email');
@@ -130,11 +120,10 @@ describe('Resolvers', () => {
           update: jest.fn().mockResolvedValue(updatedUser),
         } as any;
 
-        const response = await Mutation.signIn(
-          null,
-          { id, secretToken },
-          { MagicUser, headers, event: {} }
-        );
+        const response = await Mutation.signIn(null, { id, secretToken }, {
+          MagicUser,
+          headers,
+        } as any);
 
         expect(response).toEqual(updatedUser);
         expect(MagicUser.get).toHaveBeenCalledWith(id);
@@ -153,7 +142,7 @@ describe('Resolvers', () => {
         } as any;
 
         await expect(
-          Mutation.signIn(null, { id, secretToken }, { MagicUser, headers: {}, event: {} })
+          Mutation.signIn(null, { id, secretToken }, { MagicUser } as any)
         ).rejects.toThrow('Unable to sign in with invalid token');
       });
     });
@@ -170,11 +159,11 @@ describe('Resolvers', () => {
           update: jest.fn().mockResolvedValue(updatedUser),
         } as any;
 
-        const response = await Mutation.updateUser(
-          null,
-          { input: partialUser },
-          { id, email, MagicUser, event: {}, headers: {} }
-        );
+        const response = await Mutation.updateUser(null, { input: partialUser }, {
+          id,
+          email,
+          MagicUser,
+        } as any);
 
         expect(response).toEqual(updatedUser);
         expect(MagicUser.update).toHaveBeenCalledWith({ id, ...partialUser });
@@ -194,11 +183,11 @@ describe('Resolvers', () => {
           update: jest.fn().mockResolvedValue(updatedUser),
         } as any;
 
-        const response = await Mutation.updateUser(
-          null,
-          { input: partialUser },
-          { id, email, MagicUser, event: {}, headers: {} }
-        );
+        const response = await Mutation.updateUser(null, { input: partialUser }, {
+          id,
+          email,
+          MagicUser,
+        } as any);
 
         expect(response).toEqual(updatedUser);
         expect(MagicUser.scan).toHaveBeenCalledWith({ email: 'user@test.com' });
@@ -217,11 +206,7 @@ describe('Resolvers', () => {
         } as any;
 
         await expect(
-          Mutation.updateUser(
-            null,
-            { input: partialUser },
-            { id, email, MagicUser, event: {}, headers: {} }
-          )
+          Mutation.updateUser(null, { input: partialUser }, { id, email, MagicUser } as any)
         ).rejects.toThrow('unable to change email');
       });
     });
@@ -240,10 +225,9 @@ describe('Resolvers', () => {
         } as any;
 
         // eslint-disable-next-line no-underscore-dangle
-        const response = await User.__resolveReference(
-          { id },
-          { MagicUser, headers: {}, event: {} }
-        );
+        const response = await User.__resolveReference({ id }, {
+          MagicUser,
+        } as any);
 
         // NO OTHER PROPERTIES WILL COME THROUGH EVEN IF ASKED FOR
         expect(response).toEqual({ name: user.name, id: user.id });
