@@ -29,3 +29,4 @@ run the command `make test`
 1. need new tests on the new code
 2. more documentation on the hairy bits, like the invites pathway being a bit clunky
 3. support multi-invites
+4. re-implement the auth cookie attacher, now that `@as-integrations` have updated their methodology and it isn't **complete ass:** https://www.npmjs.com/package/@as-integrations/aws-lambda
