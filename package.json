@@ -1,7 +1,7 @@
 {
-  "name": "auth",
+  "name": "gateway",
   "version": "0.0.0",
-  "description": "auth",
+  "description": "aws serverless graphql gateway",
   "keywords": [
     "new",
     "package",
