@@ -1,47 +1,36 @@
 import { gql } from 'graphql-tag';
+import {
+  types as userTypes,
+  queries as userQueries,
+  mutations as userMutations,
+} from './users/schema';
+import {
+  types as sessionTypes,
+  queries as sessionQueries,
+  mutations as sessionMutations,
+} from './sessions/schema';
+import { queries as inviteQueries, mutations as inviteMutations } from './invites/schema';
 
 export default () => gql`
   scalar DateTime
   scalar JSONObject
 
-  input SettingsInput {
-    darkMode: Boolean
-  }
-
-  type Settings {
-    darkMode: Boolean
-  }
-
-  type User @key(fields: "id") {
-    id: ID!
-    email: ID!
-    name: String!
-    location: String
-    settings: Settings
-    createdAt: DateTime
-    updatedAt: DateTime
-  }
-
-  input UpdateUserInput {
-    id: String!
-    name: String
-    email: String
-    location: String
-    settings: SettingsInput
-  }
-
-  type AffirmativeEmpty {
+  type Affirmative {
     ok: Boolean
   }
 
+  ${userTypes}
+  ${sessionTypes}
+
   type Query {
-    user(id: ID!): User
+    ${userQueries}
+    ${sessionQueries}
+    ${inviteQueries}
   }
 
   type Mutation {
-    sendMagicLink(email: String!): AffirmativeEmpty
-    updateUser(input: UpdateUserInput!): User
-    signIn(id: ID!, secretToken: ID!): User
-    signOut: AffirmativeEmpty
+    ${userMutations}
+    ${sessionMutations}
+    ${inviteMutations}
   }
 `;
