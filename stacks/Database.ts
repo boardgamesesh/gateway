@@ -2,7 +2,7 @@ import { Config, StackContext, Table } from '@serverless-stack/resources';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
 export function Database({ stack }: StackContext) {
-  const usersTable = new Table(stack, 'users-table', {
+  const usersTable = new Table(stack, 'users', {
     fields: {
       id: 'string',
       email: 'string',
@@ -22,7 +22,7 @@ export function Database({ stack }: StackContext) {
     },
   });
 
-  const gameSessionTable = new Table(stack, 'game-sessions-table', {
+  const gameSessionTable = new Table(stack, 'game-sessions', {
     fields: {
       id: 'string',
       ownerId: 'string',
@@ -42,7 +42,7 @@ export function Database({ stack }: StackContext) {
     },
   });
 
-  const invitesTable = new Table(stack, 'game-sessions-table', {
+  const invitesTable = new Table(stack, 'invites', {
     fields: {
       id: 'string',
       userId: 'string',
