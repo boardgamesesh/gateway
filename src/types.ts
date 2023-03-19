@@ -1,11 +1,13 @@
 // import type { Entity } from 'dynamodb-toolbox';
 import type { Model } from 'dynamoose/dist/Model';
-import type { Item } from 'dynamoose/dist/Item';
 import type {
   Context as LambdaContext,
   APIGatewayProxyEventV2,
   APIGatewayProxyEvent,
 } from 'aws-lambda';
+import type { UserItem } from './users/MagicUser.model';
+import type { SessionItem } from './sessions/GameSession.model';
+import type { InviteItem } from './invites/Invite.model';
 
 export type Headers = { [key: string]: string };
 
@@ -15,24 +17,14 @@ export interface LambdaContextFunctionArgument {
   context: LambdaContext & { headers: Headers };
 }
 
-export type UserType = {
-  secretToken?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  settings: any;
-  email: string;
-  name?: string;
-  type: string; // magic | google | etc.
-  id: string;
-};
-export type MagicUserItem = Item & UserType;
-
 export type IdObject = {
   id: string;
 };
 
 export type Context = {
-  MagicUser: Model<MagicUserItem>;
+  MagicUser: Model<UserItem>;
+  GameSession: Model<SessionItem>;
+  Invite: Model<InviteItem>;
   headers: Headers;
   email?: string;
   type?: string;
