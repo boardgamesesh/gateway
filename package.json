@@ -51,7 +51,7 @@
     "@apollo/server": "^4.9.0",
     "@apollo/subgraph": "^2.5.1",
     "@as-integrations/aws-lambda": "^2.0.1",
-    "@escape.tech/graphql-armor-max-depth": "^1.8.2",
+    "@escape.tech/graphql-armor-max-depth": "^2.0.0",
     "dynamoose": "^3.2.0",
     "graphql": "^16.7.1",
     "graphql-scalars": "^1.22.2",
