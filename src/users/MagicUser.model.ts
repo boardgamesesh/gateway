@@ -1,4 +1,4 @@
-import { Schema, type } from 'dynamoose';
+import { Schema } from 'dynamoose';
 import type { Item } from 'dynamoose/dist/Item';
 
 export type UserType = {
@@ -9,21 +9,19 @@ export type UserType = {
   email: string;
   name?: string;
   type: string; // magic | google | etc.
-  id: string;
+  pk: string;
 };
 export type UserItem = Item & UserType;
 
 export default new Schema(
   {
-    id: { type: String, hashKey: true },
-    name: { type: String },
-    type: { type: String },
-    location: { type: String },
-    secretToken: { type: [String, type.NULL] },
-    friendIds: { type: Array, schema: [String] },
-    sessionIds: { type: Array, schema: [String] },
-    settings: { type: Object, schema: { darkMode: Boolean } },
-    email: { type: String, required: true, index: { name: 'email', type: 'global' } },
+    pk: { type: String, hashKey: true },
+    sk: { type: String, rangeKey: true },
+    GSI1PK: { type: String, index: { name: 'GSI1', rangeKey: 'GSI1SK', type: 'global' } },
+    GSI1SK: { type: String },
   },
-  { saveUnknown: ['settings:**'], timestamps: true }
+  {
+    saveUnknown: true,
+    timestamps: true,
+  }
 );

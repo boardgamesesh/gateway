@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { mutations as userMutations } from '../users/resolver';
+// import { mutations as userMutations } from '../users/resolver';
 import { SessionType } from '../sessions/GameSession.model';
 import { Context } from '../types';
 
@@ -22,24 +22,25 @@ export const queries = {
 export const mutations = {
   async createInvite(
     _: any,
-    { gameSessionId, email, id }: InviteInput,
+    { gameSessionId, id }: InviteInput,
     context: Context
   ): Promise<SessionType> {
-    const { GameSession, Invite, MagicUser } = context;
+    const { GameSession, Invite } = context;
 
-    let user = null;
-    if (email) {
-      [user] = await MagicUser.query('email').eq(email).using('email').exec();
+    // TODO: uncomment this once we know where the email goes
+    // let user = null;
+    // if (email) {
+    //   [user] = await MagicUser.query('email').eq(email).using('email').exec();
 
-      if (!user) {
-        await userMutations.sendMagicLink(_, { email }, context);
-        user = { id };
-      }
-    }
+    //   if (!user) {
+    //     await userMutations.sendMagicLink(_, { email }, context);
+    //     user = { id };
+    //   }
+    // }
 
     const invite = await Invite.create({
       sessionId: gameSessionId,
-      userId: user?.id || id,
+      userId: id,
       id: nanoid(),
     });
 
@@ -49,7 +50,7 @@ export const mutations = {
   },
 
   acceptInvite: async (_: any, { id }: { id: string }, context: Context) => {
-    const { GameSession, Invite, MagicUser } = context;
+    const { GameSession, Invite } = context;
 
     const invite = await Invite.get(id);
 
@@ -62,9 +63,10 @@ export const mutations = {
     );
 
     await Invite.delete(id);
-    await MagicUser.update({ id: invite.userId }, {
-      $ADD: { sessionIds: [gameSession.id] },
-    } as any);
+    // TODO: uncomment this once we know where the email goes
+    // await MagicUser.update({ id: invite.userId }, {
+    //   $ADD: { sessionIds: [gameSession.id] },
+    // } as any);
 
     return gameSession;
   },

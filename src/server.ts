@@ -24,20 +24,12 @@ const createServer = () => {
 };
 
 export const handler = async (event: any, context: any, callback: any) => {
-  const headers = {};
   const apolloHandler = startServerAndCreateLambdaHandler(
     createServer(),
     handlers.createAPIGatewayProxyEventV2RequestHandler(),
     {
-      context: (arg: any) => setContext({ event: arg.event, context: { ...arg.context, headers } }),
+      context: (arg: any) => setContext({ event: arg.event, context: { ...arg.context } }),
     }
   );
-  const response = await apolloHandler(event, context, callback);
-  return {
-    ...response,
-    headers: {
-      ...headers,
-      ...response?.headers,
-    },
-  };
+  return apolloHandler(event, context, callback);
 };

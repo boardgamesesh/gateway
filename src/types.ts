@@ -19,6 +19,7 @@ export interface LambdaContextFunctionArgument {
 
 export type IdObject = {
   id: string;
+  pk?: string;
 };
 
 export type Context = {
@@ -29,6 +30,7 @@ export type Context = {
   email?: string;
   type?: string;
   id?: string;
+  pk?: string;
   event: any;
 };
 

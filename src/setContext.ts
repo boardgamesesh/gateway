@@ -4,7 +4,6 @@ import type { LambdaContextFunctionArgument } from './types';
 import UserModel, { type UserItem } from './users/MagicUser.model';
 import InviteModel, { type InviteItem } from './invites/Invite.model';
 import SessionModel, { type SessionItem } from './sessions/GameSession.model';
-import getAuth from './auth';
 import getEnv from './getEnv';
 
 // sets the auth header so we can securely be logged in by the magic link
@@ -14,7 +13,7 @@ const setContext: ContextFunction<[LambdaContextFunctionArgument], BaseContext> 
 }) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
-  const { email, type, id } = await getAuth(event, context.headers);
+  const { email, type, pk } = context.headers;
   const MagicUser = model<UserItem>(getEnv().usersTableName, UserModel);
   const Invite = model<InviteItem>(getEnv().invitesTableName, InviteModel);
   const GameSession = model<SessionItem>(getEnv().sessionsTableName, SessionModel);
@@ -28,7 +27,7 @@ const setContext: ContextFunction<[LambdaContextFunctionArgument], BaseContext> 
     event,
     email,
     type,
-    id,
+    pk,
   };
 };
 

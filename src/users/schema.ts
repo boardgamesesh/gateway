@@ -31,8 +31,5 @@ export const queries = `#graphql
 `;
 
 export const mutations = `#graphql
-  sendMagicLink(email: String!): Affirmative
   updateUser(input: UpdateUserInput!): User
-  signIn(id: ID!, secretToken: ID!): User
-  signOut: Affirmative
 `;

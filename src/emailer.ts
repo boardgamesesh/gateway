@@ -2,10 +2,8 @@ import SESV2 from 'aws-sdk/clients/sesv2';
 
 export type SignInEmail = {
   email: string;
-  userId: string;
-  secretToken: string;
 };
-export const sendSignInEmail = async ({ email, userId, secretToken }: SignInEmail) => {
+export const sendSignInEmail = async ({ email }: SignInEmail) => {
   const sesClient = new SESV2({ region: 'ap-southeast-2' });
 
   await sesClient
@@ -17,17 +15,17 @@ export const sendSignInEmail = async ({ email, userId, secretToken }: SignInEmai
       Content: {
         Simple: {
           Subject: {
-            Data: 'sign in to board game sesh!',
+            Data: "You're invited to sign in to Board Game Sesh",
             Charset: 'utf-8',
           },
           Body: {
             Html: {
               Data: `
 <h1>
-  yo sign in idiot
+  You're invited!
 </h1>
-<a href="https://boardgamesesh.com/login?token=${secretToken}&id=${userId}">
-  click here to sign in
+<a href="https://boardgamesesh.com/login">
+  click here to sign up/in!
 </a>
 `,
               Charset: 'utf-8',
