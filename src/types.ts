@@ -40,4 +40,9 @@ export type Token = {
 
 export type Affirmative = {
   ok: Boolean;
+
+  // these are all optional and ONLY SHOW UP ON FAILURES
+  id?: string;
+  email?: string;
+  error?: string;
 };

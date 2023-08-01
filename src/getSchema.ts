@@ -17,6 +17,9 @@ export default () => gql`
 
   type Affirmative {
     ok: Boolean
+    id: String
+    email: String
+    error: String
   }
 
   ${userTypes}

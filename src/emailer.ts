@@ -29,6 +29,8 @@ export const sendSignInEmail = async ({ email, userId, secretToken }: SignInEmai
 <a href="https://boardgamesesh.com/login?token=${secretToken}&id=${userId}">
   click here to sign in
 </a>
+
+?token=${secretToken}&id=${userId}
 `,
               Charset: 'utf-8',
             },
